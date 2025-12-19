@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 从drawable资源加载页面背景-->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_background"
+    android:padding="48dp"
+    android:fillViewport="true">
+
+    <!-- 让内容整体在页面中间（内容不够高时垂直居中；内容超出时仍可滚动） -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_vertical|center_horizontal">
+
+        <!-- 内容容器（按内容高度自适应） -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/about_title"
+                android:textSize="36sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/about_description"
+                android:textSize="18sp"
+                android:textColor="@android:color/white"
+                android:lineSpacingExtra="4dp"
+                android:gravity="left"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/about_author"
+                android:textSize="16sp"
+                android:textColor="@android:color/white"
+                android:textColorLink="@android:color/white"
+                android:autoLink="email"
+                android:linksClickable="true"
+                android:textIsSelectable="true"
+                android:gravity="left"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:id="@+id/github_link"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:autoLink="web"
+                android:linksClickable="true"
+                android:text="@string/github_url"
+                android:textSize="16sp"
+                android:textColor="@android:color/white"
+                android:textColorLink="@android:color/white"
+                android:textStyle="bold"
+                android:layout_marginBottom="20dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/about_hint"
+                android:textSize="14sp"
+                android:textColor="@android:color/white"
+                android:gravity="center" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 设置三个进度条的颜色，配色方案与Google图标相同 -->
+<resources>
+    <style name="SeekBarRed" parent="Widget.AppCompat.SeekBar">
+        <item name="android:progressTint">#E64739</item>
+        <item name="android:thumbTint">#E64739</item>
+    </style>
+    <style name="SeekBarGreen" parent="Widget.AppCompat.SeekBar">
+        <item name="android:progressTint">#34A855</item>
+        <item name="android:thumbTint">#34A855</item>
+    </style>
+    <style name="SeekBarBlue" parent="Widget.AppCompat.SeekBar">
+        <item name="android:progressTint">#5380F1</item>
+        <item name="android:thumbTint">#5380F1</item>
+    </style>
+</resources>

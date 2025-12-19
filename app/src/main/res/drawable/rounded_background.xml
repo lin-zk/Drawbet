@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 笔预览和颜色预览View的样式（形状），圆形 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#000000" /> <!-- 设置背景颜色，为了能够在代码中看到形状，故设置一个颜色 -->
+    <corners android:radius="50dp" /> <!-- 设置圆角半径，值越大弧度越大 -->
+</shape>

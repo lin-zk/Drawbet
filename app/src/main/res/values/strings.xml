@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">绘画板</string>
+    <string name="action_settings">设置</string>
+    <string name="pen">画笔</string>
+    <string name="save">保存</string>
+    <string name="redo">↺</string>
+    <string name="todo">↻</string>
+    <string name="color_title">选择颜色</string>
+    <string name="clear">清空</string>
+    <string name="eraser">橡皮</string>
+    <string name="round">圆形</string>
+    <string name="rectangle">矩形</string>
+
+    <!-- About page strings -->
+    <string name="about_title">Drawbet</string>
+    <string name="about_description">简介：\n这是一个安卓应用开发课程的课程设计，一个简单的绘画板应用，具有画画的基本功能，并且创新的加入了摇晃清屏的交互方式</string>
+    <string name="about_author">作者：lin-zk\n学校：SCUT\n电子邮箱：\n1751740699@qq.com\neezhengkanglin@mail.scut.edu.cn\nQQ：1751740699\n欢迎交流</string>
+    <string name="github_url">https://github.com/lin-zk/Drawbet</string>
+    <string name="about_hint">提示：点击上方链接可打开项目主页。</string>
+
+</resources>
