@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 设置三个进度条的颜色，配色方案与Google图标相同 -->
 <resources>
     <style name="SeekBarRed" parent="Widget.AppCompat.SeekBar">
         <item name="android:progressTint">#E64739</item>
@@ -12,5 +11,13 @@
     <style name="SeekBarBlue" parent="Widget.AppCompat.SeekBar">
         <item name="android:progressTint">#5380F1</item>
         <item name="android:thumbTint">#5380F1</item>
+    </style>
+
+    <!-- Reusable widget style for purple rounded buttons -->
+    <style name="Widget.App.PurpleRoundedButton" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/btn_round_purple</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
     </style>
 </resources>

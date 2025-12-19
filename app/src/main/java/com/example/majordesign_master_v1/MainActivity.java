@@ -1,24 +1,48 @@
-package com.example.majordesign;
+package com.example.majordesign_master_v1;
 
 
-
-import android.content.DialogInterface;
+import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.app.Activity;
+import android.os.Handler;
+import android.os.Looper;
+import android.provider.MediaStore;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 
+import com.example.majordesign_master_v1.data.DrawingEntity;
+import com.example.majordesign_master_v1.data.DrawingRepository;
+import com.example.majordesign_master_v1.data.DrawingState;
+
+import java.io.OutputStream;
+import android.net.Uri;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 //主函数
 public class MainActivity extends Activity {
+    private static final long AUTOSAVE_INTERVAL_MS = 30_000L;
+    private static final String EXTRA_DRAWING_ID = "drawing_id";
+
     private WrittingView writtingView = null;//画板视图
     private RadioGroup pengroup = null;//画笔组
     private SeekBar pensizebar = null;//滚动条，用于设置笔刷大小
@@ -32,13 +56,180 @@ public class MainActivity extends Activity {
     private Button save = null;//保存按钮
     private View PenSize = null;//笔大小预览
     private View colorView = null;//颜色预览
+    private TextView drawingTitle;
+    private DrawingEntity currentEntity;
     private int color = Color.argb(255, 0, 0, 0);//全局当前颜色
     private boolean eraser_flag = false;//橡皮模式标志
+
+    private DrawingRepository repository;
+    private long drawingId = -1L;
+    private boolean stateLoaded = false;
+    private final ExecutorService ioExecutor = Executors.newSingleThreadExecutor();
+    private Handler autosaveHandler;
+    private final Runnable autosaveRunnable = new Runnable() {
+        @Override
+        public void run() {
+            saveDrawing(false);
+            scheduleAutosave();
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);//关联布局
+        repository = new DrawingRepository(this);
+        autosaveHandler = new Handler(Looper.getMainLooper());
+        drawingId = getIntent().getLongExtra(EXTRA_DRAWING_ID, -1L);
         inite();
+        prepareDrawingSession();
+    }
+
+    private void prepareDrawingSession() {
+        if (drawingId > 0) {
+            awaitCanvasThenLoad();
+        } else {
+            ioExecutor.execute(() -> {
+                drawingId = repository.createDrawing(defaultName());
+                runOnUiThread(this::awaitCanvasThenLoad);
+            });
+        }
+    }
+
+    private void awaitCanvasThenLoad() {
+        if (writtingView.getWidth() == 0 || writtingView.getHeight() == 0) {
+            writtingView.post(this::loadDrawingState);
+        } else {
+            loadDrawingState();
+        }
+    }
+
+    private void loadDrawingState() {
+        ioExecutor.execute(() -> {
+            DrawingEntity entity = repository.getById(drawingId);
+            if (entity == null) {
+                runOnUiThread(() -> {
+                    Toast.makeText(this, R.string.main_missing_drawing, Toast.LENGTH_SHORT).show();
+                    stateLoaded = true;
+                });
+                return;
+            }
+            DrawingState state = repository.toState(entity,
+                    Math.max(writtingView.getWidth(), 1),
+                    Math.max(writtingView.getHeight(), 1));
+            currentEntity = entity;
+            runOnUiThread(() -> {
+                drawingTitle.setText(entity.name);
+                writtingView.applyState(state);
+                stateLoaded = true;
+                scheduleAutosave();
+            });
+        });
+    }
+
+    private void scheduleAutosave() {
+        if (!stateLoaded || drawingId <= 0) {
+            return;
+        }
+        autosaveHandler.removeCallbacks(autosaveRunnable);
+        autosaveHandler.postDelayed(autosaveRunnable, AUTOSAVE_INTERVAL_MS);
+    }
+
+    private void stopAutosave() {
+        autosaveHandler.removeCallbacks(autosaveRunnable);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        scheduleAutosave();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopAutosave();
+        saveDrawing(false);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopAutosave();
+        ioExecutor.shutdownNow();
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, HomeActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
+        finish();
+    }
+
+    private void saveDrawing() {
+        saveDrawing(false);
+    }
+
+    private void saveDrawing(boolean showToast) {
+        if (!stateLoaded || drawingId <= 0) {
+            return;
+        }
+        DrawingState snapshot = writtingView.snapshotState();
+        repository.persistState(drawingId, snapshot);
+        if (showToast) {
+            Toast.makeText(this, R.string.main_save_success, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void exportCurrentDrawing() {
+        if (currentEntity == null) {
+            Toast.makeText(this, R.string.main_save_error, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Bitmap snapshot = writtingView.snapshotState().getCurrentBitmap();
+        if (snapshot == null) {
+            Toast.makeText(this, R.string.main_save_error, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Bitmap flattened = repository.flattenWithBackground(snapshot, Color.WHITE);
+        ioExecutor.execute(() -> {
+            String name = currentEntity.name == null || currentEntity.name.isEmpty()
+                    ? defaultName()
+                    : currentEntity.name;
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Images.Media.DISPLAY_NAME, name + ".jpg");
+            values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+            values.put(MediaStore.Images.Media.IS_PENDING, 1);
+            ContentResolver resolver = getContentResolver();
+            Uri uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+            if (uri == null) {
+                runOnUiThread(() -> Toast.makeText(this, R.string.main_save_error, Toast.LENGTH_SHORT).show());
+                return;
+            }
+            try (OutputStream os = resolver.openOutputStream(uri)) {
+                if (os != null) {
+                    flattened.compress(Bitmap.CompressFormat.JPEG, 95, os);
+                }
+            } catch (Exception e) {
+                resolver.delete(uri, null, null);
+                runOnUiThread(() -> Toast.makeText(this, R.string.main_save_error, Toast.LENGTH_SHORT).show());
+                return;
+            }
+            ContentValues finalizeValues = new ContentValues();
+            finalizeValues.put(MediaStore.Images.Media.IS_PENDING, 0);
+            resolver.update(uri, finalizeValues, null, null);
+            runOnUiThread(() -> Toast.makeText(this, R.string.main_save_success, Toast.LENGTH_SHORT).show());
+        });
+    }
+
+    private void openHistory() {
+        startActivity(new Intent(this, HistoryActivity.class));
+    }
+
+    private String defaultName() {
+        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
+        return getString(R.string.default_canvas_prefix) + "_" + format.format(new Date());
     }
 
     /**
@@ -46,6 +237,13 @@ public class MainActivity extends Activity {
      */
     private void inite(){
         writtingView = (WrittingView)findViewById(R.id.writting);
+        drawingTitle = findViewById(R.id.drawing_title);
+        drawingTitle.setOnClickListener(v -> {
+            if (currentEntity != null) {
+                promptForRename(currentEntity.id, currentEntity.name);
+            }
+        });
+        writtingView.setOnCanvasChangeListener(this::saveDrawing);
 
         RadioButton pen = (RadioButton)findViewById(R.id.pen);
         pen.setChecked(true);//开始时选择画笔
@@ -215,12 +413,9 @@ public class MainActivity extends Activity {
                     builder.setTitle("提示");
                     builder.setMessage("确定要清空画布?");
                     builder.setNegativeButton("取消", null);
-                    builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            // 按下确定后执行清屏
-                            writtingView.clearall();
-                        }
+                    builder.setPositiveButton("确定", (dialogInterface, i) -> {
+                        // 按下确定后执行清屏
+                        writtingView.clearall();
                     });
                     builder.show();//弹出提示框
                 }
@@ -229,7 +424,7 @@ public class MainActivity extends Activity {
 
         });
 
-        targetView = findViewById(R.id.save); // 长按按钮，和保存按钮是同一个，但是功能不同就分开写
+        targetView = findViewById(R.id.clear); // 长按按钮，和保存按钮是同一个，但是功能不同就分开写
 
         targetView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -247,10 +442,12 @@ public class MainActivity extends Activity {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
-                // 调用WrittingView实例的captureCanvas()方法，截取位图部分以JPG保存
-                writtingView.captureCanvas();
+                exportCurrentDrawing();
             }
+        });
+        save.setOnLongClickListener(v -> {
+            openHistory();
+            return true;
         });
 
         undo = findViewById(R.id.undo); // 撤销
@@ -275,5 +472,32 @@ public class MainActivity extends Activity {
             }
         });
 
+    }
+
+    private void promptForRename(long id, String currentName) {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_edit_text, null);
+        EditText editText = dialogView.findViewById(R.id.dialog_edit_text);
+        String titleText = currentName == null ? "" : currentName;
+        editText.setText(titleText);
+        editText.setSelection(editText.getText().length());
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.dialog_enter_name)
+                .setView(dialogView)
+                .setNegativeButton(R.string.dialog_cancel, null)
+                .setPositiveButton(R.string.dialog_confirm, (dialog, which) -> {
+                    String name = editText.getText().toString().trim();
+                    if (TextUtils.isEmpty(name)) {
+                        name = titleText;
+                    }
+                    if (!name.equals(currentName)) {
+                        if (currentEntity != null) {
+                            currentEntity.name = name;
+                        }
+                        drawingTitle.setText(name);
+                        repository.rename(id, name);
+                    }
+                })
+                .show();
     }
 }

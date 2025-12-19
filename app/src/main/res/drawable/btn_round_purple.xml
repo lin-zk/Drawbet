@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 圆角紫色按钮背景，包含 ripple 和 mask -->
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/purple">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/purple"/>
+            <corners android:radius="50dp"/>
+            <padding
+                android:left="12dp"
+                android:top="8dp"
+                android:right="12dp"
+                android:bottom="8dp"/>
+        </shape>
+    </item>
+
+<!--    &lt;!&ndash; mask 用于让 ripple 遵循圆角 &ndash;&gt;-->
+<!--    <item android:id="@android:id/mask">-->
+<!--        <shape android:shape="rectangle">-->
+<!--            <solid android:color="@color/white"/>-->
+<!--            <corners android:radius="12dp"/>-->
+<!--        </shape>-->
+<!--    </item>-->
+</ripple>

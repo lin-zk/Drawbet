@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">绘画板</string>
+    <string name="app_name">绘画板2</string>
     <string name="action_settings">设置</string>
     <string name="pen">画笔</string>
     <string name="save">保存</string>
@@ -12,12 +12,46 @@
     <string name="eraser">橡皮</string>
     <string name="round">圆形</string>
     <string name="rectangle">矩形</string>
-
-    <!-- About page strings -->
+    <string name="home_welcome">欢迎回来</string>
+    <string name="home_subtitle">请选择一个操作开始创作</string>
+    <string name="new_drawing">新的画作</string>
+    <string name="continue_drawing">继续作画</string>
+    <string name="history_drawings">历史画作</string>
+    <string name="dialog_enter_name">请输入画作名称</string>
+    <string name="dialog_cancel">取消</string>
+    <string name="dialog_confirm">确定</string>
+    <string name="home_empty_continue">暂无可继续的画作</string>
+    <string name="history_search_hint">搜索画作</string>
+    <string name="history_add">新建画布</string>
+    <string name="history_add_description">添加画作</string>
+    <string name="history_select_all">全选</string>
+    <string name="history_select_none">取消</string>
+    <string name="history_invert">反选</string>
+    <string name="history_delete">删除</string>
+    <string name="history_export">保存</string>
+    <string name="history_delete_title">删除确认</string>
+    <string name="history_delete_confirm">确定删除选中的画作吗？</string>
+    <string name="history_delete_done">已删除选中画作</string>
+    <string name="history_export_empty">请选择要保存的画作</string>
+    <string name="history_export_success">所选画作保存成功</string>
+    <string name="history_export_partial">部分画作保存失败</string>
+    <string name="history_selection_empty">请先选择画作</string>
+    <string name="history_empty_hint">暂无画作，点击右上角 + 新建</string>
+    <string name="history_open_error">无法打开画作</string>
+    <string name="history_export_error">保存失败，请检查存储权限</string>
+    <string name="default_canvas_prefix">新建画布</string>
+    <string name="home_loading">加载中…</string>
+    <string name="home_download">导入/下载</string>
+    <string name="main_save_success">画作已保存</string>
+    <string name="main_save_error">保存失败，请稍后重试</string>
+    <string name="main_missing_drawing">无法找到这条画作记录</string>
+    <string name="home_exit_prompt">再次返回退出应用</string>
+    <!--  About page strings  -->
     <string name="about_title">Drawbet</string>
-    <string name="about_description">简介：\n这是一个安卓应用开发课程的课程设计，一个简单的绘画板应用，具有画画的基本功能，并且创新的加入了摇晃清屏的交互方式</string>
+    <string name="about_description">简介：\n这是一个安卓应用开发课程的课程设计，一个简单的绘画板应用，具有画画、存储的基本功能，并且创新的加入了摇晃清屏的交互方式</string>
     <string name="about_author">作者：lin-zk\n学校：SCUT\n电子邮箱：\n1751740699@qq.com\neezhengkanglin@mail.scut.edu.cn\nQQ：1751740699\n欢迎交流</string>
     <string name="github_url">https://github.com/lin-zk/Drawbet</string>
     <string name="about_hint">提示：点击上方链接可打开项目主页。</string>
+    <string name="footer_signature">lin-zk https://github.com/lin-zk/Drawbet 绘画板2</string>
 
 </resources>

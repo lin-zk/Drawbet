@@ -1,4 +1,4 @@
-package com.example.majordesign;
+package com.example.majordesign_master_v1;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -18,13 +18,14 @@ import android.net.Uri;
 import android.os.Environment;
 import android.os.Vibrator;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
+
+import com.example.majordesign_master_v1.data.DrawingState;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -36,7 +37,7 @@ import java.util.Stack;
  * @author Administrator
  *
  */
-public class WrittingView  extends View{
+public class WrittingView extends View{
     private Canvas mCanvas;
     private Bitmap mBitmap;
     private Paint paint = null;
@@ -50,6 +51,22 @@ public class WrittingView  extends View{
     private Vibrator vibrator; // 震动
 
     private boolean windos_flag = false;
+
+    public interface OnCanvasChangeListener {
+        void onCanvasChanged();
+    }
+
+    private OnCanvasChangeListener canvasChangeListener;
+
+    public void setOnCanvasChangeListener(OnCanvasChangeListener listener) {
+        this.canvasChangeListener = listener;
+    }
+
+    private void notifyCanvasChanged() {
+        if (canvasChangeListener != null) {
+            canvasChangeListener.onCanvasChanged();
+        }
+    }
 
     public WrittingView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -167,7 +184,36 @@ public class WrittingView  extends View{
             invalidate();
             undoStack.clear();// 清空后不能再撤回
             redoStack.clear();// 清空后不能再恢复
+            notifyCanvasChanged();
         }
+    }
+
+    public void applyState(DrawingState state) {
+        if (state == null) {
+            return;
+        }
+        if (getWidth() == 0 || getHeight() == 0) {
+            post(() -> applyState(state));
+            return;
+        }
+        Bitmap base = state.getCurrentBitmap();
+        Bitmap target = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(target);
+        canvas.drawColor(Color.TRANSPARENT, Mode.CLEAR);
+        if (base != null) {
+            Rect src = new Rect(0, 0, base.getWidth(), base.getHeight());
+            Rect dst = new Rect(0, 0, target.getWidth(), target.getHeight());
+            canvas.drawBitmap(base, src, dst, null);
+        }
+        mBitmap = target;
+        mCanvas.setBitmap(mBitmap);
+        undoStack = cloneStack(state.getUndoStack());
+        redoStack = cloneStack(state.getRedoStack());
+        invalidate();
+    }
+
+    public DrawingState snapshotState() {
+        return new DrawingState(cloneBitmap(mBitmap), cloneStack(undoStack), cloneStack(redoStack));
     }
 
     @Override
@@ -189,6 +235,7 @@ public class WrittingView  extends View{
             mBitmap = previousBitmap; // 恢复到上一次绘图的状态
             mCanvas.setBitmap(mBitmap); // 把位图重新加载到画布
             invalidate(); // 刷新画布
+            notifyCanvasChanged();
         }
     }
 
@@ -203,6 +250,7 @@ public class WrittingView  extends View{
             mBitmap = nextBitmap; // 恢复到上一次撤销的状态
             mCanvas.setBitmap(mBitmap);// 把位图重新加载到画布
             invalidate(); // 刷新画布
+            notifyCanvasChanged();
         }
     }
 
@@ -212,61 +260,60 @@ public class WrittingView  extends View{
     private float LstartY = 0;
     private float RstartY = 0;
 
+    // 用于预览的变量
+    private boolean isDrawingPreview = false;
+    private float previewStopX = 0;
+    private float previewStopY = 0;
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        // TODO Auto-generated method stub
-        int action=event.getAction();
-        //线绘制终点
-        float lstopX = 0;
-        float lstopY = 0;
-        switch(action){
-            case MotionEvent.ACTION_DOWN://点击
-                //在这里获取起始点坐标
+        int action = event.getAction();
+        float x = event.getX();
+        float y = event.getY();
+
+        switch (action) {
+            case MotionEvent.ACTION_DOWN:
+                // 操作前先把当前位图入栈
                 Bitmap currentBitmap = Bitmap.createBitmap(mBitmap);
                 undoStack.push(currentBitmap);
-                //操作前先把当前位图入栈
-                LstartX = event.getX();
-                LstartY = event.getY();
-                RstartX = event.getX();
-                RstartY = event.getY();
+                redoStack.clear(); // 开始新的绘制时，清空恢复栈
+
+                if (draw_type == 0) { // 曲线
+                    LstartX = x;
+                    LstartY = y;
+                } else { // 矩形或圆形
+                    isDrawingPreview = true;
+                    RstartX = x;
+                    RstartY = y;
+                    previewStopX = x;
+                    previewStopY = y;
+                }
                 break;
-            case MotionEvent.ACTION_MOVE://移动
-                //在这里获取移动点坐标
-                //只有画线才是实时绘制
-                if(draw_type == 0){
-                    lstopX = event.getX();
-                    lstopY = event.getY();
-                    mCanvas.drawLine(LstartX, LstartY, lstopX, lstopY, paint);//画线
-                    //把末点赋值给始点，实现曲线绘制
+
+            case MotionEvent.ACTION_MOVE:
+                if (draw_type == 0) { // 曲线
+                    float lstopX = x;
+                    float lstopY = y;
+                    mCanvas.drawLine(LstartX, LstartY, lstopX, lstopY, paint);
                     LstartX = lstopX;
                     LstartY = lstopY;
-                    invalidate();//刷新画布将画显示
+                    invalidate();
+                } else { // 矩形或圆形预览
+                    previewStopX = x;
+                    previewStopY = y;
+                    invalidate(); // 触发onDraw来绘制预览
                 }
                 break;
-            case MotionEvent.ACTION_UP://收笔
-                //矩形或圆绘制终点
-                float rstopX = event.getX();
-                float rstopY = event.getY();
-                if (draw_type != 0) {
-                    //画圆和矩形是收笔结算绘制
-                    float left = Math.min(RstartX, rstopX);
-                    float right = Math.max(RstartX, rstopX);
-                    float top = Math.min(RstartY, rstopY);
-                    float bottom = Math.max(RstartY, rstopY);
-                    float strokeWidth = paint.getStrokeWidth();
-                    paint.setStyle(Paint.Style.STROKE);  // 设置画笔样式为描边
-                    // 绘制空心矩形，减去笔画宽度的一半以保证边框不被裁剪
-                    if (draw_type == 1){
-                        mCanvas.drawOval(left + strokeWidth / 2, top + strokeWidth / 2, right - strokeWidth / 2, bottom - strokeWidth / 2, paint);
-                        //画圆形
-                    }
-                    else{
-                        mCanvas.drawRect(left + strokeWidth / 2, top + strokeWidth / 2, right - strokeWidth / 2, bottom - strokeWidth / 2, paint);
-                        //画矩形
-                    }
+
+            case MotionEvent.ACTION_UP:
+                if (isDrawingPreview) {
+                    isDrawingPreview = false;
+                    drawShape(mCanvas, RstartX, RstartY, x, y, draw_type); // 在mBitmap上绘制最终形状
                 }
-                invalidate();  //刷新画布
+                invalidate();
+                notifyCanvasChanged();
                 break;
+
             default:
                 break;
         }
@@ -274,58 +321,121 @@ public class WrittingView  extends View{
     }
 
     public void captureCanvas() {
-        // 创建一个与画布相同尺寸的位图
-        Bitmap capturedBitmap = Bitmap.createBitmap(mBitmap.getWidth(), mBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    // 创建一个与画布相同尺寸的位图
+                    Bitmap capturedBitmap = Bitmap.createBitmap(mBitmap.getWidth(), mBitmap.getHeight(), Bitmap.Config.ARGB_8888);
 
-        // 将mBitmap绘制到新的位图上
-        Canvas canvas = new Canvas(capturedBitmap);
-        canvas.drawColor(Color.WHITE);
+                    // 将mBitmap绘制到新的位图上
+                    Canvas canvas = new Canvas(capturedBitmap);
+                    canvas.drawColor(Color.WHITE);
+                    canvas.drawBitmap(mBitmap, 0, 0, null);
+
+                    // 创建一个文件来保存截取的图片
+                    File imagePath = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "captured_image.png");
+
+                    // 将位图保存为图片文件
+                    FileOutputStream fos = new FileOutputStream(imagePath);
+                    capturedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);//JPG保存
+                    fos.close();
+
+                    // 通知系统相册扫描新的图片文件
+                    Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                    Uri contentUri = Uri.fromFile(imagePath);
+                    mediaScanIntent.setData(contentUri);
+                    getContext().sendBroadcast(mediaScanIntent);
+
+                    // Toast需要在UI线程中显示
+                    if (getContext() instanceof android.app.Activity) {
+                        ((android.app.Activity) getContext()).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getContext(), "图片保存至相册", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    public Bitmap renderBitmapWithBackground(int backgroundColor) {
+        if (mBitmap == null) {
+            return null;
+        }
+        Bitmap output = Bitmap.createBitmap(mBitmap.getWidth(), mBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(output);
+        canvas.drawColor(backgroundColor);
         canvas.drawBitmap(mBitmap, 0, 0, null);
+        return output;
+    }
 
-        // 创建一个文件来保存截取的图片
-        File imagePath = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "captured_image.png");
+    private Stack<Bitmap> cloneStack(Stack<Bitmap> source) {
+        Stack<Bitmap> clone = new Stack<>();
+        if (source != null) {
+            for (Bitmap bmp : source) {
+                clone.push(cloneBitmap(bmp));
+            }
+        }
+        return clone;
+    }
 
-        try {
-            // 将位图保存为图片文件
-            FileOutputStream fos = new FileOutputStream(imagePath);
-            capturedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);//JPG保存
-            fos.close();
+    private Bitmap cloneBitmap(Bitmap source) {
+        if (source == null) {
+            return null;
+        }
+        return source.copy(Bitmap.Config.ARGB_8888, true);
+    }
 
-            // 通知系统相册扫描新的图片文件
-            Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-            Uri contentUri = Uri.fromFile(imagePath);
-            mediaScanIntent.setData(contentUri);
-            getContext().sendBroadcast(mediaScanIntent);
+    private void drawShape(Canvas canvas, float startX, float startY, float stopX, float stopY, int type) {
+        paint.setStyle(Paint.Style.STROKE);
 
-            Toast.makeText(getContext(), "图片保存至相册", Toast.LENGTH_SHORT).show();
-            //系统提示弹窗
-        } catch (IOException e) {
-            e.printStackTrace();
+        float left = Math.min(startX, stopX);
+        float top = Math.min(startY, stopY);
+        float right = Math.max(startX, stopX);
+        float bottom = Math.max(startY, stopY);
+
+        if (type == 1) { // 圆形或椭圆 (外接)
+            float centerX = (startX + stopX) / 2;
+            float centerY = (startY + stopY) / 2;
+            float width = Math.abs(startX - stopX);
+            float height = Math.abs(startY - stopY);
+
+            // 计算外接椭圆的半径
+            // 乘以 sqrt(2) 可以确保对角线上的点(即起点和终点)落在椭圆上
+            float rx = (float) (width / 2 * Math.sqrt(2));
+            float ry = (float) (height / 2 * Math.sqrt(2));
+
+            // 定义椭圆的边界并绘制
+            canvas.drawOval(centerX - rx, centerY - ry, centerX + rx, centerY + ry, paint);
+
+        } else if (type == 2) { // 矩形
+            canvas.drawRect(left, top, right, bottom, paint);
         }
     }
 
 
-
     @Override
     protected void onDraw(Canvas canvas) {
-        // TODO Auto-generated method stub
         super.onDraw(canvas);
-        // 绘制 mBitmap
-        // 加圆角矩形框，从drawable资源
+
+        // 绘制背景边框
         Drawable roundedRectangleDrawable = getResources().getDrawable(R.drawable.gray_border);
-        roundedRectangleDrawable.setBounds(0, 0, mBitmap.getWidth(), mBitmap.getHeight());
+        roundedRectangleDrawable.setBounds(0, 0, getWidth(), getHeight());
         roundedRectangleDrawable.draw(canvas);
 
-
-        // 绘画区域不能超过边框
-        int margin = 12; // 边距大小
-        Rect dstRect = new Rect(
-                margin,
-                margin,
-                canvas.getWidth() - margin,
-                canvas.getHeight() - margin
-        );
-
+        // 绘制 mBitmap (已有的内容)
+        int margin = 12;
+        Rect dstRect = new Rect(margin, margin, getWidth() - margin, getHeight() - margin);
         canvas.drawBitmap(mBitmap, null, dstRect, null);
+
+        // 如果正在绘制预览，则在顶层绘制预览形状
+        if (isDrawingPreview) {
+            drawShape(canvas, RstartX, RstartY, previewStopX, previewStopY, draw_type);
+        }
     }
 }

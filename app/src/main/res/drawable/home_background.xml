@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <bitmap
+            android:antialias="true"
+            android:filter="true"
+            android:dither="true"
+            android:src="@drawable/home_bg_image"
+            android:gravity="center"
+            android:tileMode="disabled" />
+    </item>
+    <item>
+        <shape>
+            <solid android:color="#00FBF9FD" />
+        </shape>
+    </item>
+</layer-list>

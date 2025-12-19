@@ -2,7 +2,7 @@
 <!-- 关于界面的背景样式（形状），45度红蓝渐变 -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <gradient
-        android:startColor="#FF6699"
-        android:endColor="#3366FF"
-        android:angle="45" />
+        android:startColor="#FF00E5"
+        android:endColor="#00FFF0"
+        android:angle="135" />
 </shape>

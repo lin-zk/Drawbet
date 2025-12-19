@@ -4,11 +4,11 @@
 
     <!-- 获取读写文件权限，用于存储画作 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <!-- 获取传感器文件权限，用于摇晃清屏 -->
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <!-- app名为绘画板，安卓版本为12（因为鸿蒙系统兼容安卓12），图标为自己制作 -->
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -17,23 +17,28 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.MajorDesign"
-        tools:targetApi="31">
-
-        <!-- 注册两个页面，并且设置页面方向随手机方向 -->
+        android:theme="@style/Theme.MajorDesign_Master_v1">
         <activity
-            android:name=".MainActivity"
-            android:configChanges="orientation|screenSize"
-            android:exported="true">
+            android:name=".HomeActivity"
+            android:exported="true"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".AboutPage">
-        </activity>
+            android:name=".MainActivity"
+            android:configChanges="orientation|screenSize"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".HistoryActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".AboutPage"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

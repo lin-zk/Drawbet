@@ -2,4 +2,8 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Purple palette for the rounded purple button -->
+    <color name="purple">#7B61FF</color>
+    <color name="search_highlight">#FF5555</color>
 </resources>

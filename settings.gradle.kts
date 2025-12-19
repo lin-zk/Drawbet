@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Drawbet_v1"
+rootProject.name = "Drawbet_v2"
 include(":app")
  
