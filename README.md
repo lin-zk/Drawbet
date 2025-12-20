@@ -120,7 +120,7 @@ cd Drawbet
 
 ## 📄 许可证
 
-本项目使用**[MIT许可证](LICENSE)**。
+本项目使用 **[MIT许可证](LICENSE)**。
 
 ---
 
