@@ -4,9 +4,9 @@
 
 ---
 
-## 📱 About
+## 📱 Overview
 
-Drawbet is a simple and easy-to-use Android drawing application that supports multiple brush styles, color adjustments, and drawing history management. Perfect for capturing creative inspirations anytime, anywhere.
+Drawbet is an intuitive Android drawing application featuring multiple brush styles, color customization, and drawing history management. Perfect for capturing creative inspiration anytime, anywhere.
 
 ---
 
@@ -14,54 +14,59 @@ Drawbet is a simple and easy-to-use Android drawing application that supports mu
 
 ### 🏠 Home Page
 
-![Home Page](picture/首页.png)
+<img src="picture/首页.png" width="549" alt="Home Page">
 
-- **New Drawing**: Create a new drawing with custom naming (default format: `NewDrawing_CurrentTime`)
-- **Continue Drawing**: Quickly load the most recently edited drawing
-- **History**: Browse and manage all saved drawings
-- Beautiful illustration background with semi-transparent overlay, aesthetically pleasing and theme-appropriate
+- **New Drawing**: Create a new drawing with custom naming (default format: `NewCanvas_CurrentTime`)
+- **Continue Drawing**: Quickly load your most recently edited drawing
+- **Drawing History**: Browse and manage all your saved drawings
+- Features a beautiful illustrated background with a semi-transparent overlay that complements the drawing theme
 - Author information displayed at the bottom
 
 ### 🎨 Drawing Page
 
-![Drawing Page](picture/作画页面.png)
+<img src="picture/作画页面.png" width="562" alt="Drawing Page">
 
-- **Drawing Tools**: Four drawing modes available
-  - Brush: Free-form line drawing
-  - Eraser: Erase drawn content
-  - Circle: Draw ellipses/circles
-  - Rectangle: Draw rectangles
-- **Brush Size**: Adjust brush thickness via slider with real-time preview on the left circular view
-- **Color Adjustment**: Freely adjust brush color using RGB sliders with real-time preview on the left circular view
-- **Undo/Redo**: Support for multi-step undo and redo operations
-- **Clear Canvas**: One-click canvas clearing (confirmation required)
-- **Auto-save Drawing**: Automatically save drawing to database when changes detected
-- **Export Image**: Click the save button to export drawing as JPG to phone gallery; long press the save button to go to history page
-- **Shake to Clear**: Shake the phone to quickly clear the canvas (confirmation required)
-- **Rename**: Click on the drawing title at the top to rename
-- **Auto-save**: Automatically saves undo/redo stacks when drawing changes
+- **Drawing Tools**: Four drawing modes to choose from
+  - Brush: Draw freehand curves
+  - Eraser: Remove drawn content
+  - Circle: Draw circles and ellipses
+  - Rectangle: Draw rectangular shapes
+- **Brush Size Adjustment**: Use the slider to adjust brush thickness in real-time, with a preview circle on the left showing the current size
+- **Color Adjustment**: Customize brush colors using RGB sliders, with the left preview circle displaying the current color in real-time
+- **Undo/Redo**: Support for multiple undo and redo operations
+- **Clear Canvas**: Clear the entire canvas with one click (confirmation required)
+- **Auto-save**: Automatically saves changes to the database when modifications are detected
+- **Export Image**: Tap the save button to export your drawing as a JPG image to your phone's gallery; long press to navigate to the history page
+- **Shake to Clear**: Shake your device to quickly clear the canvas (confirmation required)
+- **Rename**: Tap the drawing title at the top to rename it
+- **State Preservation**: Automatically saves the undo/redo stack when changes are made
 
 ### 📂 History Page
 
-![History Page](picture/历史画作页面.png)
+<img src="picture/历史画作页面.png" width="562" alt="History Page">
 
-- **Search**: Instant search as you type, matching parts of drawing names are highlighted in red
-- **New Drawing**: Click the `+` button in the top right to create a new drawing
+- **Search Functionality**: Search as you type with matching portions of drawing names highlighted in red
+- **Create New Drawing**: Tap the `+` button in the top-right corner to create a new drawing
 - **Drawing List**:
-  - Displays thumbnail, name, and last modified time
-  - Click on name to rename
-  - Click on drawing to enter edit mode
-  - Checkbox support for batch selection
+  - Displays thumbnails, names, and last modified timestamps
+  - Tap a name to rename the drawing
+  - Tap a drawing to open it for editing
+  - Checkboxes enable batch selection
 - **Batch Operations**:
-  - Select All/Deselect: One-click select all or deselect
-  - Invert: Invert current selection
-  - Delete: Batch delete selected drawings
-  - Save: Batch export selected drawings as JPG images to phone gallery
-- Shows "No drawings, click + in top right to create" when empty
-- Scroll support for browsing many drawings
+  - Select All/Deselect All: Toggle selection of all drawings with one tap
+  - Invert Selection: Reverse the current selection
+  - Delete: Remove selected drawings in bulk
+  - Save: Export selected drawings as JPG images to your phone's gallery
+- When no drawings exist, displays "No drawings yet, tap + in the top-right to create one"
+- Supports scrolling to browse through large collections of drawings
 
 ### 👤 About Page
+
+<img src="picture/关于页面.png" width="562" alt="About Page">
+
 - Long press the "Clear" button to access the About page
+- Displays app version information and developer details
+- Clean interface design showcasing essential app information
 
 ---
 
@@ -95,24 +100,24 @@ app/src/main/java/com/example/majordesign_master_v1/
 - **Sensors**: Accelerometer sensor for shake-to-clear functionality
 
 ### 🗂️ Data & Storage
-- **Autosave**: Persists the undo/redo stack every 30 seconds on the drawing page and when the app goes to background or exits
-- **Local database**: Room stores drawing names, thumbnails, and canvas state (`DrawingState` / `BitmapConverters`)
-- **Image export**: Saves JPGs to the system gallery via MediaStore using the drawing name; defaults to `NewDrawing_yyyyMMdd_HHmmss` when unnamed
-- **Permissions**: Exporting requires gallery write access; on Android 10+ this uses scoped storage without legacy permissions
+- **Auto-save**: The undo/redo stack is automatically persisted every 30 seconds while drawing, and whenever the app moves to the background or exits
+- **Local Database**: Room stores drawing names, thumbnails, and canvas state (`DrawingState` / `BitmapConverters`)
+- **Image Export**: Saves JPG files to the system gallery via MediaStore using the drawing name; defaults to `NewCanvas_yyyyMMdd_HHmmss` for unnamed drawings
+- **Permissions**: Exporting images requires gallery write access; on Android 10+, this uses scoped storage without requiring legacy permissions
 
-### Development Steps Summary
+### Development Overview
 
-1. Build three main pages: Home, Drawing, and History pages
-2. Design home page layout with three entry points: New Drawing, Continue Drawing, History
-3. Design drawing page with brush size adjustment, brush style selection, canvas, color adjustment, and action buttons
-4. Design history page with search, create new, and batch operation features
-5. Create drawable and style resources for beautiful UI effects
+1. Build three main pages: Home, Drawing, and History
+2. Design the home page layout with three entry points: New Drawing, Continue Drawing, and Drawing History
+3. Design the drawing page including brush size adjustment, style selection, canvas, color adjustment, and action buttons
+4. Design the history page with search, create, and batch operation capabilities
+5. Create drawable and style resources for polished UI effects
 6. Implement MainActivity interaction logic
 7. Implement WrittingView drawing functionality
-8. Implement HomeActivity home page behavior
-9. Implement HistoryActivity for history management
+8. Implement HomeActivity behavior
+9. Implement HistoryActivity for managing drawing history
 10. Create data and history packages for database and UI interface management
-11. Design About page
+11. Design the About page
 
 ---
 
@@ -145,12 +150,12 @@ This project is released under the **[MIT License](LICENSE)**.
 - **Author**: lin-zk
 - **Email**: 1751740699@qq.com / eezhengkanglin@mail.scut.edu.cn
 - **QQ**: 1751740699
-- **Welcome to connect**
+- **Feel free to reach out**
 
 ---
 
 ## 🙏 Acknowledgments
 
-- **Copilot's powerful code generation and debugging capabilities, which greatly contributed to the successful implementation of this project**
-- **[「ご注文はうさぎですか？」新作アニメ制作決定！Celebration artwork](https://gochiusa.com/anime10th/contents/c06080000.html?utm_source=x&utm_medium=post&utm_campaign=tp2025) used as the home page illustration background for this project**
-- **The Embedded Systems and Mobile Application Design course offered by SCUT and the two instructors**
+- **Copilot's powerful code generation and debugging capabilities have been instrumental in bringing this project to fruition**
+- **[「ご注文はうさぎですか？」New Anime Production Announcement Celebration Artwork](https://gochiusa.com/anime10th/contents/c06080000.html?utm_source=x&utm_medium=post&utm_campaign=tp2025) used as the home page illustration background**
+- **The Embedded Systems and Mobile Application Design course offered by SCUT and its two dedicated instructors**
