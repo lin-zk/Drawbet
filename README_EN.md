@@ -29,12 +29,11 @@ Drawbet is a simple and easy-to-use Android drawing application that supports mu
 - **Color Adjustment**: Freely adjust brush color using RGB sliders with real-time preview on the left circular view
 - **Undo/Redo**: Support for multi-step undo and redo operations
 - **Clear Canvas**: One-click canvas clearing (confirmation required)
-- **Save Drawing**: Save drawing to database
-- **Export Image**: Long press the save button to go to history page; short press to export drawing as JPG to phone gallery
+- **Auto-save Drawing**: Automatically save drawing to database when changes detected
+- **Export Image**: Click the save button to export drawing as JPG to phone gallery; long press the save button to go to history page
 - **Shake to Clear**: Shake the phone to quickly clear the canvas (confirmation required)
 - **Rename**: Click on the drawing title at the top to rename
 - **Auto-save**: Automatically saves undo/redo stacks when drawing changes
-- Author information displayed at the bottom
 
 ### 📂 History Page
 - **Search**: Instant search as you type, matching parts of drawing names are highlighted in red
@@ -48,14 +47,12 @@ Drawbet is a simple and easy-to-use Android drawing application that supports mu
   - Select All/Deselect: One-click select all or deselect
   - Invert: Invert current selection
   - Delete: Batch delete selected drawings
-  - Export: Batch export selected drawings as JPG images to phone gallery
+  - Save: Batch export selected drawings as JPG images to phone gallery
 - Shows "No drawings, click + in top right to create" when empty
 - Scroll support for browsing many drawings
-- Author information displayed at the bottom
 
 ### 👤 About Page
 - Long press the "Clear" button to access the About page
-- Displays author information
 
 ---
 
@@ -123,12 +120,8 @@ app/src/main/java/com/example/majordesign_master_v1/
 # Clone the project
 git clone https://github.com/lin-zk/Drawbet.git
 cd Drawbet
-
 # Build the project
 ./gradlew build
-
-# Run tests
-./gradlew test
 ```
 
 ---
@@ -139,4 +132,16 @@ This project is released under the **[MIT License](LICENSE)**.
 
 ---
 
-**Author**: lin-zk
+## 🤝 About the Author
+- **Author**: lin-zk
+- **Email**: 1751740699@qq.com / eezhengkanglin@mail.scut.edu.cn
+- **QQ**: 1751740699
+- **Welcome to connect**
+
+---
+
+## 🙏 Acknowledgments
+
+- **Copilot's powerful code generation and debugging capabilities, which greatly contributed to the successful implementation of this project**
+- **[「ご注文はうさぎですか？」新作アニメ制作決定！Celebration artwork](https://gochiusa.com/anime10th/contents/c06080000.html?utm_source=x&utm_medium=post&utm_campaign=tp2025) used as the home page illustration background for this project**
+- **The Embedded Systems and Mobile Application Design course offered by SCUT and the two instructors**
