@@ -1,4 +1,4 @@
-[中文](#) | [English](README_EN.md) | [日本語](README_JA.md)
+中文 | [English](README_EN.md) | [日本語](README_JA.md)
 
 # Drawbet - 简易绘画应用
 ---
@@ -84,6 +84,12 @@ app/src/main/java/com/example/majordesign_master_v1/
 - **样式资源**：drawable 资源实现圆角矩形、圆形视图、渐变背景等效果
 - **传感器**：加速度传感器实现摇晃清屏功能
 
+### 🗂️ 数据与存储
+- **自动保存**：进入作画页后每 30 秒自动落盘撤销/恢复栈，切后台或退出时也会保存
+- **本地数据库**：Room 存储画作名称、缩略图与状态（`DrawingState`/`BitmapConverters`）
+- **图片导出**：通过 MediaStore 以 JPG 保存到系统相册，文件名默认采用画作名，未命名时使用 `新建画布_yyyyMMdd_HHmmss`
+- **权限提示**：导出图片需要允许相册写入权限（Android 10+ 使用分区存储，无需 legacy 权限）
+
 ### 开发步骤摘要
 
 1. 构建三个主要页面：首页、作画页面、历史画作页面
@@ -103,9 +109,10 @@ app/src/main/java/com/example/majordesign_master_v1/
 ## 🚀 运行项目
 
 ### 环境要求
-- Android Studio Arctic Fox 或更高版本
-- Android JDK 31 或更高版本
-- Gradle 8.5+
+- Android Studio 2024.1+（支持 Android Gradle Plugin 8）
+- Android SDK：compileSdk 36 / targetSdk 36，minSdk 24
+- JDK 11
+- Gradle Wrapper 8.13（项目已内置）
 
 ### 构建步骤
 ```bash
