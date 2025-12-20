@@ -1,6 +1,6 @@
-# Drawbet - Simple Drawing App
+[中文](README.md) | English | [日本語](README_JA.md)
 
-**Language / 语言选择 / 言語:**  [中文](README.md) | [English](#) | [日本語](README_JA.md)
+# Drawbet - Simple Drawing App
 
 ---
 
@@ -88,6 +88,12 @@ app/src/main/java/com/example/majordesign_master_v1/
 - **Style Resources**: Drawable resources for rounded rectangles, circular views, gradient backgrounds, etc.
 - **Sensors**: Accelerometer sensor for shake-to-clear functionality
 
+### 🗂️ Data & Storage
+- **Autosave**: Persists the undo/redo stack every 30 seconds on the drawing page and when the app goes to background or exits
+- **Local database**: Room stores drawing names, thumbnails, and canvas state (`DrawingState` / `BitmapConverters`)
+- **Image export**: Saves JPGs to the system gallery via MediaStore using the drawing name; defaults to `NewDrawing_yyyyMMdd_HHmmss` when unnamed
+- **Permissions**: Exporting requires gallery write access; on Android 10+ this uses scoped storage without legacy permissions
+
 ### Development Steps Summary
 
 1. Build three main pages: Home, Drawing, and History pages
@@ -107,9 +113,10 @@ app/src/main/java/com/example/majordesign_master_v1/
 ## 🚀 Running the Project
 
 ### Requirements
-- Android Studio Arctic Fox or higher
-- Android SDK 21 (Android 5.0) or higher
-- Gradle 7.0+
+- Android Studio 2024.1+ (Android Gradle Plugin 8 compatible)
+- Android SDK: compileSdk 36 / targetSdk 36, minSdk 24
+- JDK 11
+- Gradle Wrapper 8.13 (included)
 
 ### Build Steps
 ```bash
@@ -128,7 +135,7 @@ cd Drawbet
 
 ## 📄 License
 
-This project is for learning and educational purposes only.
+This project is released under the **[MIT License](LICENSE)**.
 
 ---
 

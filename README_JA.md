@@ -1,6 +1,6 @@
-# Drawbet - シンプルお絵描きアプリ
+[中文](README.md) | [English](README_EN.md) | 日本語
 
-**言語 / Language / 语言选择:**  [中文](README.md) | [English](README_EN.md) | [日本語](#)
+# Drawbet - シンプルお絵描きアプリ
 
 ---
 
@@ -88,6 +88,12 @@ app/src/main/java/com/example/majordesign_master_v1/
 - **スタイルリソース**：drawable リソースで角丸矩形、円形ビュー、グラデーション背景などを実現
 - **センサー**：加速度センサーでシェイクによるクリア機能を実装
 
+### 🗂️ データとストレージ
+- **自動保存**：お絵描き画面で 30 秒ごとに元に戻す/やり直しスタックを自動保存し、バックグラウンド移行や終了時にも保存
+- **ローカルデータベース**：Room が作品名・サムネイル・状態（`DrawingState` / `BitmapConverters`）を保持
+- **画像エクスポート**：MediaStore 経由で JPG をギャラリーへ保存、ファイル名は作品名を使用し、未命名なら `新規作品_yyyyMMdd_HHmmss`
+- **権限**：画像エクスポートにはギャラリー書き込み許可が必要（Android 10+ はスコープドストレージで legacy 権限不要）
+
 ### 開発ステップ概要
 
 1. ホーム、お絵描き、履歴の3つのメイン画面を構築
@@ -107,9 +113,10 @@ app/src/main/java/com/example/majordesign_master_v1/
 ## 🚀 プロジェクトの実行
 
 ### 必要環境
-- Android Studio Arctic Fox 以降
-- Android SDK 21 (Android 5.0) 以降
-- Gradle 7.0+
+- Android Studio 2024.1 以降（Android Gradle Plugin 8 対応）
+- Android SDK：compileSdk 36 / targetSdk 36、minSdk 24
+- JDK 11
+- Gradle Wrapper 8.13（同梱）
 
 ### ビルド手順
 ```bash
@@ -128,7 +135,7 @@ cd Drawbet
 
 ## 📄 ライセンス
 
-このプロジェクトは学習・教育目的のみです。
+本プロジェクトは **[MIT ライセンス](LICENSE)** です。
 
 ---
 
