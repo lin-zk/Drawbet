@@ -13,6 +13,9 @@ Drawbet is a simple and easy-to-use Android drawing application that supports mu
 ## 📖 Features
 
 ### 🏠 Home Page
+
+![Home Page](picture/首页.png)
+
 - **New Drawing**: Create a new drawing with custom naming (default format: `NewDrawing_CurrentTime`)
 - **Continue Drawing**: Quickly load the most recently edited drawing
 - **History**: Browse and manage all saved drawings
@@ -20,6 +23,9 @@ Drawbet is a simple and easy-to-use Android drawing application that supports mu
 - Author information displayed at the bottom
 
 ### 🎨 Drawing Page
+
+![Drawing Page](picture/作画页面.png)
+
 - **Drawing Tools**: Four drawing modes available
   - Brush: Free-form line drawing
   - Eraser: Erase drawn content
@@ -36,6 +42,9 @@ Drawbet is a simple and easy-to-use Android drawing application that supports mu
 - **Auto-save**: Automatically saves undo/redo stacks when drawing changes
 
 ### 📂 History Page
+
+![History Page](picture/历史画作页面.png)
+
 - **Search**: Instant search as you type, matching parts of drawing names are highlighted in red
 - **New Drawing**: Click the `+` button in the top right to create a new drawing
 - **Drawing List**:
